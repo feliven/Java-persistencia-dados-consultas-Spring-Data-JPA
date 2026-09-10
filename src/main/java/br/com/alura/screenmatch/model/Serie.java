@@ -26,6 +26,7 @@ public class Serie {
         this.atores = Arrays.asList(
                 dadosSerie.atores().split(", "));
         this.poster = dadosSerie.poster();
+        // this.sinopse = ConsultaMyMemory.obterTraducao(dadosSerie.sinopse());
         this.sinopse = LangChain4jRequesty.obterTraducao(dadosSerie.sinopse());
     }
 

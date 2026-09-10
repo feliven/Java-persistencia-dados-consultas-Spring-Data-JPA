@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalDouble;
 
+import br.com.alura.screenmatch.service.ConsultaGemini;
+
 public class Serie {
     private String titulo;
     private Integer totalTemporadas;
@@ -24,7 +26,7 @@ public class Serie {
         this.atores = Arrays.asList(
                 dadosSerie.atores().split(", "));
         this.poster = dadosSerie.poster();
-        this.sinopse = dadosSerie.sinopse();
+        this.sinopse = ConsultaGemini.obterTraducao(dadosSerie.sinopse());
     }
 
     public String getTitulo() {

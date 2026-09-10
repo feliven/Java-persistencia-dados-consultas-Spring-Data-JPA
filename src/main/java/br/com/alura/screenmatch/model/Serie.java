@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalDouble;
 
-import br.com.alura.screenmatch.service.ConsultaGemini;
+import br.com.alura.screenmatch.service.LangChain4jRequesty;
 
 public class Serie {
     private String titulo;
@@ -26,7 +26,7 @@ public class Serie {
         this.atores = Arrays.asList(
                 dadosSerie.atores().split(", "));
         this.poster = dadosSerie.poster();
-        this.sinopse = ConsultaGemini.obterTraducao(dadosSerie.sinopse());
+        this.sinopse = LangChain4jRequesty.obterTraducao(dadosSerie.sinopse());
     }
 
     public String getTitulo() {

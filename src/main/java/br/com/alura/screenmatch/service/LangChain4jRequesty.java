@@ -6,38 +6,36 @@ import java.time.Instant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.google.genai.Client;
-import com.google.genai.types.GenerateContentResponse;
+import dev.langchain4j.model.openai.OpenAiChatModel;
 
 @Service
-public class ConsultaGemini {
+public class LangChain4jRequesty {
 
     private static String apiKey;
 
-    @Value("${gemini.api-key}")
+    @Value("${requesty-key}")
     public void setApiKey(String apiKey) {
-        ConsultaGemini.apiKey = apiKey;
+        LangChain4jRequesty.apiKey = apiKey;
     }
 
     public static String obterTraducao(String texto) {
-        Client client = Client.builder()
+
+        OpenAiChatModel model = OpenAiChatModel.builder()
+                .baseUrl("https://router.requesty.ai/v1")
                 .apiKey(apiKey)
+                .modelName("policy/java-alura")
                 .build();
 
         Instant start = Instant.now();
 
-        GenerateContentResponse response = client.models.generateContent(
-                "gemini-3.6-flash",
-                "Traduza para português do Brasil sem explicações, saudações ou comentários: " + texto,
-                null);
-
-        client.close();
+        String response = model
+                .chat("Traduza para português do Brasil sem explicações, saudações ou comentários: " + texto);
 
         Instant end = Instant.now();
         Duration timeElapsed = Duration.between(start, end);
         long seconds = timeElapsed.toSeconds();
         System.out.println("Execution time: " + seconds + " seconds");
 
-        return response.text() != null ? response.text().trim() : "ERRO??";
+        return response;
     }
 }

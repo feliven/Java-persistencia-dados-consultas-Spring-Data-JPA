@@ -20,22 +20,27 @@ public class LangChain4jRequesty {
 
     public static String obterTraducao(String texto) {
 
-        OpenAiChatModel model = OpenAiChatModel.builder()
-                .baseUrl("https://router.requesty.ai/v1")
-                .apiKey(apiKey)
-                .modelName("policy/java-alura")
-                .build();
+        try {
+            OpenAiChatModel model = OpenAiChatModel.builder()
+                    .baseUrl("https://router.requesty.ai/v1")
+                    .apiKey(apiKey)
+                    .modelName("policy/java-alura")
+                    .build();
 
-        Instant start = Instant.now();
+            Instant start = Instant.now();
 
-        String response = model
-                .chat("Traduza para português do Brasil sem explicações, saudações ou comentários: " + texto);
+            String response = model
+                    .chat("Traduza para português do Brasil sem explicações, saudações ou comentários: " + texto);
 
-        Instant end = Instant.now();
-        Duration timeElapsed = Duration.between(start, end);
-        long seconds = timeElapsed.toSeconds();
-        System.out.println("Execution time: " + seconds + " seconds");
+            Instant end = Instant.now();
+            Duration timeElapsed = Duration.between(start, end);
+            long seconds = timeElapsed.toSeconds();
+            System.out.println("Execution time: " + seconds + " seconds");
 
-        return response;
+            return response;
+        } catch (Exception e) {
+            return texto;
+        }
+
     }
 }

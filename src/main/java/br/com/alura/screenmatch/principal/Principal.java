@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 import br.com.alura.screenmatch.model.DadosSerie;
 import br.com.alura.screenmatch.model.DadosTemporada;
 import br.com.alura.screenmatch.model.Episodio;
+import br.com.alura.screenmatch.model.Ator;
 import br.com.alura.screenmatch.model.Serie;
+import br.com.alura.screenmatch.repository.AtorRepository;
 import br.com.alura.screenmatch.repository.SerieRepository;
 import br.com.alura.screenmatch.service.ConsumoApi;
 import br.com.alura.screenmatch.service.ConverteDados;
@@ -21,11 +23,13 @@ public class Principal {
     private final String ENDERECO = "https://www.omdbapi.com/?t=";
     private final String API_KEY = "&apikey=4b35c2a4";
 
-    private SerieRepository repository;
+    private SerieRepository serieRepository;
+    private AtorRepository atorRepository;
     private List<Serie> series;
 
-    public Principal(SerieRepository repository) {
-        this.repository = repository;
+    public Principal(SerieRepository repository, AtorRepository atorRepository) {
+        this.serieRepository = repository;
+        this.atorRepository = atorRepository;
     }
 
     public void exibeMenu() {
@@ -38,6 +42,7 @@ public class Principal {
                     2 - Buscar episódios
                     3 - Listar séries buscadas
                     4 - Buscar série por título
+                    5 - Buscar série por ator
 
                     0 - Sair
                     """;
@@ -59,6 +64,9 @@ public class Principal {
                 case 4:
                     buscarSeriePorTitulo();
                     break;
+                case 5:
+                    buscarSeriePorAtor();
+                    break;
                 case 0:
                     System.out.println("Saindo...");
                     break;
@@ -74,7 +82,7 @@ public class Principal {
         // series = dadosSeries.stream().map(d -> new
         // Serie(d)).collect(Collectors.toList());
 
-        series = repository.findAll();
+        series = serieRepository.findAll();
 
         series.forEach(System.out::println);
     }
@@ -82,11 +90,17 @@ public class Principal {
     private void buscarSerieWeb() {
         DadosSerie dadosSerie = getDadosSerie();
 
-        Serie serie = new Serie(dadosSerie);
+        List<Ator> atores = List.of(dadosSerie.atores().split(", "))
+                .stream()
+                .map(nome -> atorRepository.findByNomeIgnoreCase(nome)
+                        .orElseGet(() -> atorRepository.save(new Ator(nome))))
+                .toList();
+
+        Serie serie = new Serie(dadosSerie, atores);
 
         // dadosSeries.add(dadosSerie);
 
-        repository.save(serie);
+        serieRepository.save(serie);
         System.out.println(dadosSerie);
     }
 
@@ -103,11 +117,11 @@ public class Principal {
 
         System.out.println("Escolha a série pelo nome:");
         var nomeSerie = scanner.nextLine();
-        var serie = repository.findByTituloContainingIgnoreCase(nomeSerie);
+        var series = serieRepository.findByTituloContainingIgnoreCase(nomeSerie);
 
-        if (serie.isPresent()) {
+        if (series.size() > 0) {
 
-            var serieEncontrada = serie.get();
+            var serieEncontrada = series.getFirst();
 
             List<DadosTemporada> temporadas = new ArrayList<>();
 
@@ -126,7 +140,7 @@ public class Principal {
                     .collect(Collectors.toList());
 
             serieEncontrada.setEpisodios(episodios);
-            repository.save(serieEncontrada);
+            serieRepository.save(serieEncontrada);
         } else {
             System.out.println("Série não foi encontrada");
         }
@@ -138,12 +152,26 @@ public class Principal {
         System.out.println("Escolha a série pelo nome:");
         var nomeSerie = scanner.nextLine();
 
-        var serieBuscada = repository.findByTituloContainingIgnoreCase(nomeSerie);
+        var seriesBuscadas = serieRepository.findByTituloContainingIgnoreCase(nomeSerie);
 
-        if (serieBuscada.isPresent()) {
-            System.out.println("Dados da série: " + serieBuscada.get());
+        if (seriesBuscadas.size() > 0) {
+            System.out.println("Dados da(s) série(s): " + System.lineSeparator() + seriesBuscadas);
         } else {
             System.out.println("Série não foi encontrada");
         }
     }
+
+    private void buscarSeriePorAtor() {
+
+        System.out.println("Digite o nome do ator:");
+        var nomeAtor = scanner.nextLine();
+
+        var seriesEncontradas = serieRepository.findByAtoresNomeContainingIgnoreCase(nomeAtor);
+
+        if (seriesEncontradas.size() > 0) {
+            System.out.println("Dados das séries: " + seriesEncontradas);
+        } else {
+            System.out.println("Nenhuma série foi encontrada com esse ator");
+        }
+    };
 }

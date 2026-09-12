@@ -1,7 +1,6 @@
 package br.com.alura.screenmatch.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalDouble;
 
@@ -16,6 +15,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -32,8 +32,8 @@ public class Serie {
     @ElementCollection(targetClass = Categoria.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private List<Categoria> generos;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> atores;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Ator> atores;
     private String poster;
     private String sinopse;
     @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -42,7 +42,7 @@ public class Serie {
     public Serie() {
     }
 
-    public Serie(DadosSerie dadosSerie) {
+    public Serie(DadosSerie dadosSerie, List<Ator> atores) {
         this.titulo = dadosSerie.titulo();
         this.totalTemporadas = dadosSerie.totalTemporadas();
         this.avaliacao = OptionalDouble
@@ -50,8 +50,7 @@ public class Serie {
                         Double.valueOf(dadosSerie.avaliacao()))
                 .orElse(0);
         this.generos = Categoria.fromStringArray(dadosSerie.genero().split(","));
-        this.atores = Arrays.asList(
-                dadosSerie.atores().split(", "));
+        this.atores = atores;
         this.poster = dadosSerie.poster();
         // this.sinopse = ConsultaMyMemory.obterTraducao(dadosSerie.sinopse());
         this.sinopse = LangChain4jRequesty.obterTraducao(dadosSerie.sinopse());
@@ -77,7 +76,7 @@ public class Serie {
         return generos;
     }
 
-    public List<String> getAtores() {
+    public List<Ator> getAtores() {
         return atores;
     }
 
@@ -100,10 +99,16 @@ public class Serie {
 
     @Override
     public String toString() {
-        return "Serie [titulo=" + titulo + "\'" + ", totalTemporadas=" + totalTemporadas
-                + ", avaliacao=" + avaliacao + ", generos=" + generos.toString()
-                + ", atores=" + atores.toString() + "\'" + ", poster=" + poster + "\'"
-                + ", sinopse=" + sinopse + "\'" + ", episodios: " + episodios + "]";
+        return "Serie" + System.lineSeparator() +
+                " [titulo='" + titulo + '\'' + System.lineSeparator()
+                + "totalTemporadas=" + totalTemporadas + System.lineSeparator()
+                + "avaliacao=" + avaliacao + System.lineSeparator()
+                + "generos=" + generos + System.lineSeparator()
+                + "atores=" + atores + System.lineSeparator()
+                + "poster='" + poster + '\'' + System.lineSeparator()
+                + "sinopse='" + sinopse + '\'' + System.lineSeparator()
+                + "episodios=" + episodios + System.lineSeparator()
+                + "]";
     }
 
 }

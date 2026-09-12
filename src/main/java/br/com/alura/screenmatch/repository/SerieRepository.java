@@ -1,11 +1,13 @@
 package br.com.alura.screenmatch.repository;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.com.alura.screenmatch.model.Serie;
 
 public interface SerieRepository extends JpaRepository<Serie, Long> {
-    Optional<Serie> findByTituloContainingIgnoreCase(String serie);
+    List<Serie> findByTituloContainingIgnoreCase(String serie);
+
+    List<Serie> findByAtoresNomeContainingIgnoreCase(String nome);
 }

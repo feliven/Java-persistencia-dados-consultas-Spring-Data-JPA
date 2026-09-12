@@ -1,19 +1,41 @@
 package br.com.alura.screenmatch.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalDouble;
 
 import br.com.alura.screenmatch.service.LangChain4jRequesty;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
+@Entity
+@Table(name = "series")
 public class Serie {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(unique = true)
     private String titulo;
     private Integer totalTemporadas;
     private Double avaliacao;
+    @ElementCollection(targetClass = Categoria.class)
+    @Enumerated(EnumType.STRING)
     private List<Categoria> generos;
+    @ElementCollection
     private List<String> atores;
     private String poster;
     private String sinopse;
+    @Transient
+    private List<Episodio> episodios = new ArrayList<>();
 
     public Serie(DadosSerie dadosSerie) {
         this.titulo = dadosSerie.titulo();
@@ -28,6 +50,10 @@ public class Serie {
         this.poster = dadosSerie.poster();
         // this.sinopse = ConsultaMyMemory.obterTraducao(dadosSerie.sinopse());
         this.sinopse = LangChain4jRequesty.obterTraducao(dadosSerie.sinopse());
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getTitulo() {
@@ -56,6 +82,10 @@ public class Serie {
 
     public String getSinopse() {
         return sinopse;
+    }
+
+    public List<Episodio> getEpisodios() {
+        return episodios;
     }
 
     @Override

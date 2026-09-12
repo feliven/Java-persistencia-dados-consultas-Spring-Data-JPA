@@ -11,6 +11,7 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,15 +28,18 @@ public class Serie {
     private String titulo;
     private Integer totalTemporadas;
     private Double avaliacao;
-    @ElementCollection(targetClass = Categoria.class)
+    @ElementCollection(targetClass = Categoria.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private List<Categoria> generos;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> atores;
     private String poster;
     private String sinopse;
     @Transient
     private List<Episodio> episodios = new ArrayList<>();
+
+    public Serie() {
+    }
 
     public Serie(DadosSerie dadosSerie) {
         this.titulo = dadosSerie.titulo();

@@ -3,7 +3,6 @@ package br.com.alura.screenmatch.principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 import br.com.alura.screenmatch.model.DadosSerie;
 import br.com.alura.screenmatch.model.DadosTemporada;
@@ -19,8 +18,6 @@ public class Principal {
     private ConverteDados conversor = new ConverteDados();
     private final String ENDERECO = "https://www.omdbapi.com/?t=";
     private final String API_KEY = "&apikey=4b35c2a4";
-
-    private List<DadosSerie> dadosSeries = new ArrayList<>();
 
     private SerieRepository repository;
 
@@ -65,9 +62,12 @@ public class Principal {
     }
 
     private void listarSeriesBuscadas() {
-        List<Serie> series = new ArrayList<>();
 
-        series = dadosSeries.stream().map(d -> new Serie(d)).collect(Collectors.toList());
+        // List<Serie> series = new ArrayList<>();
+        // series = dadosSeries.stream().map(d -> new
+        // Serie(d)).collect(Collectors.toList());
+
+        List<Serie> series = repository.findAll();
 
         series.forEach(System.out::println);
     }

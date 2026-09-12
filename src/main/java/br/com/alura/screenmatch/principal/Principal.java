@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import br.com.alura.screenmatch.model.DadosSerie;
 import br.com.alura.screenmatch.model.DadosTemporada;
 import br.com.alura.screenmatch.model.Serie;
+import br.com.alura.screenmatch.repository.SerieRepository;
 import br.com.alura.screenmatch.service.ConsumoApi;
 import br.com.alura.screenmatch.service.ConverteDados;
 
@@ -20,6 +21,12 @@ public class Principal {
     private final String API_KEY = "&apikey=4b35c2a4";
 
     private List<DadosSerie> dadosSeries = new ArrayList<>();
+
+    private SerieRepository repository;
+
+    public Principal(SerieRepository repository) {
+        this.repository = repository;
+    }
 
     public void exibeMenu() {
         var opcao = -1;
@@ -66,9 +73,14 @@ public class Principal {
     }
 
     private void buscarSerieWeb() {
-        DadosSerie dados = getDadosSerie();
-        dadosSeries.add(dados);
-        System.out.println(dados);
+        DadosSerie dadosSerie = getDadosSerie();
+
+        Serie serie = new Serie(dadosSerie);
+
+        // dadosSeries.add(dadosSerie);
+
+        repository.save(serie);
+        System.out.println(dadosSerie);
     }
 
     private DadosSerie getDadosSerie() {

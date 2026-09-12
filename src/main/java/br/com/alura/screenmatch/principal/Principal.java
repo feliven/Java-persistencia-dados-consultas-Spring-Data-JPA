@@ -1,6 +1,7 @@
 package br.com.alura.screenmatch.principal;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -40,14 +41,15 @@ public class Principal {
         while (opcao != 0) {
 
             var menu = """
+
                     1 - Série - baixar dados da API
                     2 - Episódios - baixar dados da API
                     3 - Listar séries salvas
                     4 - Buscar série por título
                     5 - Buscar série por ator
+                    6 - Buscar série por ator e avaliação
 
-                    0 - Sair
-                    """;
+                    0 - Sair""";
 
             System.out.println(menu);
             opcao = scanner.nextInt();
@@ -68,6 +70,9 @@ public class Principal {
                     break;
                 case 5:
                     buscarSeriePorAtor();
+                    break;
+                case 6:
+                    buscarSeriePorAtorEAvaliacao();
                     break;
                 case 0:
                     System.out.println("Saindo...");
@@ -192,4 +197,32 @@ public class Principal {
             System.out.println("Nenhuma série foi encontrada com esse ator");
         }
     };
+
+    private void buscarSeriePorAtorEAvaliacao() {
+
+        System.out.println("Digite o nome do ator:");
+        var nomeAtor = scanner.nextLine();
+        System.out.println("Qual a nota mínima da série?");
+        double avaliacao;
+        try {
+            avaliacao = scanner.nextDouble();
+        } catch (InputMismatchException e) {
+            System.out.println("Digite um número válido, com vírgula como separador decimal.");
+            scanner.nextLine();
+            return;
+        }
+        scanner.nextLine();
+
+        var seriesEncontradas = serieRepository
+                .findByAtoresNomeContainingIgnoreCaseAndAvaliacaoGreaterThan(nomeAtor, avaliacao);
+
+        if (seriesEncontradas.size() > 0) {
+            System.out.println("Dados da(s) série(s): " + System.lineSeparator());
+            seriesEncontradas.forEach(s -> System.out
+                    .println(s.getTitulo() + ", avaliacao=" + s.getAvaliacao()
+                            + ", atores=" + s.getAtores() + ", sinopse=" + s.getSinopse()));
+        } else {
+            System.out.println("Nenhuma série foi encontrada com esse ator");
+        }
+    }
 }

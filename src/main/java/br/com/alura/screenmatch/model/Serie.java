@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.OptionalDouble;
 
 import br.com.alura.screenmatch.service.LangChain4jRequesty;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -35,7 +36,7 @@ public class Serie {
     private List<String> atores;
     private String poster;
     private String sinopse;
-    @OneToMany(mappedBy = "serie")
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Episodio> episodios = new ArrayList<>();
 
     public Serie() {
@@ -92,11 +93,17 @@ public class Serie {
         return episodios;
     }
 
+    public void setEpisodios(List<Episodio> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
+        this.episodios = episodios;
+    }
+
     @Override
     public String toString() {
-        return "Serie [titulo=" + titulo + ", totalTemporadas=" + totalTemporadas
+        return "Serie [titulo=" + titulo + "\'" + ", totalTemporadas=" + totalTemporadas
                 + ", avaliacao=" + avaliacao + ", generos=" + generos.toString()
-                + ", atores=" + atores.toString() + ", poster=" + poster + ", sinopse=" + sinopse + "]";
+                + ", atores=" + atores.toString() + "\'" + ", poster=" + poster + "\'"
+                + ", sinopse=" + sinopse + "\'" + ", episodios: " + episodios + "]";
     }
 
 }

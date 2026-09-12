@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
+
 import br.com.alura.screenmatch.model.DadosSerie;
 import br.com.alura.screenmatch.model.DadosTemporada;
 import br.com.alura.screenmatch.model.Episodio;
@@ -38,9 +40,9 @@ public class Principal {
         while (opcao != 0) {
 
             var menu = """
-                    1 - Buscar séries
-                    2 - Buscar episódios
-                    3 - Listar séries buscadas
+                    1 - Série - baixar dados da API
+                    2 - Episódios - baixar dados da API
+                    3 - Listar séries salvas
                     4 - Buscar série por título
                     5 - Buscar série por ator
 
@@ -84,7 +86,7 @@ public class Principal {
 
         series = serieRepository.findAll();
 
-        series.forEach(System.out::println);
+        series.forEach(s -> System.out.println(s.getTitulo()));
     }
 
     private void buscarSerieWeb() {
@@ -100,8 +102,13 @@ public class Principal {
 
         // dadosSeries.add(dadosSerie);
 
-        serieRepository.save(serie);
-        System.out.println(dadosSerie);
+        try {
+            serieRepository.save(serie);
+            System.out.println(dadosSerie);
+        } catch (DataIntegrityViolationException e) {
+            System.out.println("Já existe uma série com esse nome.");
+            return;
+        }
     }
 
     private DadosSerie getDadosSerie() {
@@ -140,7 +147,14 @@ public class Principal {
                     .collect(Collectors.toList());
 
             serieEncontrada.setEpisodios(episodios);
-            serieRepository.save(serieEncontrada);
+
+            try {
+                serieRepository.save(serieEncontrada);
+            } catch (DataIntegrityViolationException e) {
+                System.out.println("Já existe um episódio com esse título.");
+                return;
+            }
+
         } else {
             System.out.println("Série não foi encontrada");
         }
@@ -155,7 +169,9 @@ public class Principal {
         var seriesBuscadas = serieRepository.findByTituloContainingIgnoreCase(nomeSerie);
 
         if (seriesBuscadas.size() > 0) {
-            System.out.println("Dados da(s) série(s): " + System.lineSeparator() + seriesBuscadas);
+            System.out.println("Dados da(s) série(s): " + System.lineSeparator());
+            seriesBuscadas.forEach(s -> System.out
+                    .println(s.getTitulo() + ", avaliação=" + s.getAvaliacao() + ", sinopse=" + s.getSinopse()));
         } else {
             System.out.println("Série não foi encontrada");
         }
@@ -169,7 +185,9 @@ public class Principal {
         var seriesEncontradas = serieRepository.findByAtoresNomeContainingIgnoreCase(nomeAtor);
 
         if (seriesEncontradas.size() > 0) {
-            System.out.println("Dados das séries: " + seriesEncontradas);
+            System.out.println("Dados da(s) série(s): " + System.lineSeparator());
+            seriesEncontradas.forEach(s -> System.out
+                    .println(s.getTitulo() + ", atores=" + s.getAtores() + ", sinopse=" + s.getSinopse()));
         } else {
             System.out.println("Nenhuma série foi encontrada com esse ator");
         }

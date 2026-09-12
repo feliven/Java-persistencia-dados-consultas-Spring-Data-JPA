@@ -3,6 +3,7 @@ package br.com.alura.screenmatch.model;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,6 +18,7 @@ public class Episodio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private Integer temporada;
+    @Column(unique = true)
     private String titulo;
     private Integer numeroEpisodio;
     private Double avaliacao;

@@ -53,6 +53,7 @@ public class Principal {
                     7 - Buscar top 5 séries salvas
                     8 - Buscar série por gênero / categoria
                     9 - Buscar séries curtas e boas
+                    11 - buscarEpisodiosPorTrechoTitulo
 
                     0 - Sair""";
 
@@ -87,6 +88,9 @@ public class Principal {
                     break;
                 case 9:
                     buscarSeriesCurtasEBoas();
+                    break;
+                case 11:
+                    buscarEpisodiosPorTrechoTitulo();
                     break;
                 case 0:
                     System.out.println("Saindo...");
@@ -145,16 +149,19 @@ public class Principal {
         var nomeSerie = scanner.nextLine();
         var series = serieRepository.findByTituloContainingIgnoreCase(nomeSerie);
 
-        if (series.size() > 0) {
+        if (series.size() == 0) {
+            System.out.println("Série não foi encontrada");
+        }
 
-            var serieEncontrada = series.getFirst();
+        for (int i = 0; i < series.size(); i++) {
+            var serieEncontrada = series.get(i);
 
             List<DadosTemporada> temporadas = new ArrayList<>();
 
-            for (int i = 1; i <= serieEncontrada.getTotalTemporadas(); i++) {
+            for (int j = 1; j <= serieEncontrada.getTotalTemporadas(); j++) {
                 var json = consumo
                         .obterDados(
-                                ENDERECO + serieEncontrada.getTitulo().replace(" ", "+") + "&season=" + i + API_KEY);
+                                ENDERECO + serieEncontrada.getTitulo().replace(" ", "+") + "&season=" + j + API_KEY);
                 DadosTemporada dadosTemporada = conversor.obterDados(json, DadosTemporada.class);
                 temporadas.add(dadosTemporada);
             }
@@ -171,11 +178,7 @@ public class Principal {
                 serieRepository.save(serieEncontrada);
             } catch (DataIntegrityViolationException e) {
                 System.out.println("Já existe um episódio com esse título.");
-                return;
             }
-
-        } else {
-            System.out.println("Série não foi encontrada");
         }
 
     }
@@ -312,6 +315,20 @@ public class Principal {
                             + ", temporadas=" + s.getTotalTemporadas() + ", sinopse=" + s.getSinopse()));
         } else {
             System.out.println("Nenhuma série foi encontrada com esses critérios");
+        }
+    }
+
+    private void buscarEpisodiosPorTrechoTitulo() {
+        System.out.println("Digite parte do título do episódio que você está procurando:");
+        var trechoTitulo = scanner.nextLine();
+
+        var episodiosEncontrados = serieRepository.listarEpisodiosPorTrechoTitulo(trechoTitulo);
+
+        if (episodiosEncontrados.size() > 0) {
+            System.out.println(System.lineSeparator() + "Episódio(s) encontrado(s):");
+            episodiosEncontrados.forEach(System.out::println);
+        } else {
+            System.out.println("Nenhum episódio foi encontrado.");
         }
     }
 }

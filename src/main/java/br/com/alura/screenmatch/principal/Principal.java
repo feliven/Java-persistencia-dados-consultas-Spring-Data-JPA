@@ -55,6 +55,7 @@ public class Principal {
                     9 - Buscar séries curtas e boas
                     11 - buscarEpisodiosPorTrechoTitulo
                     22 - buscarTop5EpisodiosSerie
+                    33 - buscarEpisodiosAPartirDeData
 
                     0 - Sair""";
 
@@ -95,6 +96,9 @@ public class Principal {
                     break;
                 case 22:
                     buscarTop5EpisodiosSerie();
+                    break;
+                case 33:
+                    buscarEpisodiosAPartirDeData();
                     break;
                 case 0:
                     System.out.println("Saindo...");
@@ -352,6 +356,35 @@ public class Principal {
                     .printf("Título: %s - Nota %s - Série: %s - S%sE%s\n",
                             e.getTitulo(), e.getAvaliacao(), e.getSerie().getTitulo(),
                             e.getTemporada(), e.getNumeroEpisodio()));
+        } else {
+            System.out.println("Nenhum episódio foi encontrado.");
+        }
+    }
+
+    private void buscarEpisodiosAPartirDeData() {
+        listarSeriesBuscadas();
+
+        System.out.println("Digite o nome da série desejada:");
+        var nomeSerie = scanner.nextLine();
+
+        System.out.println("Qual é o ano máximo de lançamento?");
+        int anoLancamento;
+        try {
+            anoLancamento = scanner.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Digite um número inteiro válido.");
+            scanner.nextLine();
+            return;
+        }
+        scanner.nextLine();
+
+        var episodiosEncontrados = serieRepository.listarEpisodiosAPartirDeData(nomeSerie, anoLancamento);
+
+        if (episodiosEncontrados.size() > 0) {
+            episodiosEncontrados.forEach(e -> System.out
+                    .printf("Título: %s - Série: %s - S%sE%s - Lançado em %s\n",
+                            e.getTitulo(), e.getSerie().getTitulo(),
+                            e.getTemporada(), e.getNumeroEpisodio(), e.getDataLancamento()));
         } else {
             System.out.println("Nenhum episódio foi encontrado.");
         }

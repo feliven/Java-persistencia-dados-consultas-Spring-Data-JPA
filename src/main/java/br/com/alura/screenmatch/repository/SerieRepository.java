@@ -51,4 +51,11 @@ public interface SerieRepository extends JpaRepository<Serie, Long> {
             """)
     List<Episodio> listarTop5EpisodiosPorSerie(String trechoSerie);
 
+    @Query("""
+                SELECT e FROM Serie s JOIN s.episodios e
+                WHERE LOWER(s.titulo) LIKE CONCAT('%', LOWER(:trechoSerie), '%')
+                AND YEAR(e.dataLancamento) >= :anoLancamento
+            """)
+    List<Episodio> listarEpisodiosAPartirDeData(String trechoSerie, int anoLancamento);
+
 }

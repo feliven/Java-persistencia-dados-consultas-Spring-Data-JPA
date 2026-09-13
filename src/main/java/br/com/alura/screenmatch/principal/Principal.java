@@ -3,8 +3,11 @@ package br.com.alura.screenmatch.principal;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.dao.DataIntegrityViolationException;
 
@@ -12,6 +15,7 @@ import br.com.alura.screenmatch.model.DadosSerie;
 import br.com.alura.screenmatch.model.DadosTemporada;
 import br.com.alura.screenmatch.model.Episodio;
 import br.com.alura.screenmatch.model.Ator;
+import br.com.alura.screenmatch.model.Categoria;
 import br.com.alura.screenmatch.model.Serie;
 import br.com.alura.screenmatch.repository.AtorRepository;
 import br.com.alura.screenmatch.repository.SerieRepository;
@@ -50,6 +54,7 @@ public class Principal {
                     6 - Buscar série por ator e avaliação
                     7 - Buscar top 5 séries salvas
                     8 - Listar todas as séries salvas por avaliação
+                    9 -  Buscar série por gênero / categoria
 
                     0 - Sair""";
 
@@ -81,6 +86,9 @@ public class Principal {
                     break;
                 case 8:
                     listarSeriesPorNota();
+                    break;
+                case 9:
+                    buscarSeriePorGenero();
                     break;
                 case 0:
                     System.out.println("Saindo...");
@@ -258,4 +266,34 @@ public class Principal {
             System.out.println("Nenhuma série foi encontrada");
         }
     }
+
+    private void buscarSeriePorGenero() {
+        List<String> generosList = Stream.of(Categoria.values())
+                .map(c -> c.toString().toLowerCase()).toList();
+        System.out.println(generosList);
+
+        System.out.println("Digite um dos gêneros acima:");
+        var nomeCategoria = scanner.nextLine();
+
+        Optional<Categoria> categoria = Stream.of(Categoria.values())
+                .filter(c -> c.toString().equalsIgnoreCase(nomeCategoria)).findFirst();
+
+        try {
+            var seriesEncontradas = serieRepository.findByGeneros(categoria.get());
+
+            if (seriesEncontradas.size() > 0) {
+                System.out.println("Dados da(s) série(s): " + System.lineSeparator());
+                seriesEncontradas.forEach(s -> System.out
+                        .println(s.getTitulo() + ", gêneros=" + s.getGeneros() + ", sinopse=" + s.getSinopse()));
+            } else {
+                System.out.println("Nenhuma série desse gênero foi encontrada");
+            }
+        } catch (NoSuchElementException e) {
+            System.out.println("Gênero inválido!");
+            return;
+        } catch (Exception e) {
+            System.out.println("Erro inesperado: " + e);
+            return;
+        }
+    };
 }

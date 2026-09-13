@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import br.com.alura.screenmatch.model.Categoria;
 import br.com.alura.screenmatch.model.Serie;
 
 public interface SerieRepository extends JpaRepository<Serie, Long> {
@@ -16,4 +17,6 @@ public interface SerieRepository extends JpaRepository<Serie, Long> {
     List<Serie> findFirst5ByOrderByAvaliacaoDesc();
 
     List<Serie> findAllByOrderByAvaliacaoDesc();
+
+    List<Serie> findByGeneros(Categoria categoria);
 }

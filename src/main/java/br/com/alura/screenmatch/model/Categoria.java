@@ -4,25 +4,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum Categoria {
-    ROMANCE("Romance"),
-    COMEDIA("Comedy"),
-    DRAMA("Drama"),
-    MISTERIO("Mystery"),
-    ACAO("Action"),
-    AVENTURA("Adventure"),
-    SUSPENSE("Thriller"),
-    TERROR("Horror"),
-    FICCAO_CIENTIFICA("Sci-Fi"),
-    DOCUMENTARIO("Documentary"),
-    REALITY("Reality-TV"),
-    CRIME("Crime"),
-    GAME_SHOW("Game-Show"),
-    PARA_A_FAMILIA("Family");
+    ROMANCE("Romance", "Romance"),
+    COMEDIA("Comedy", "Comédia"),
+    DRAMA("Drama", "Drama"),
+    MISTERIO("Mystery", "Mistério"),
+    ACAO("Action", "Ação"),
+    AVENTURA("Adventure", "Aventura"),
+    SUSPENSE("Thriller", "Suspense"),
+    TERROR("Horror", "Terror"),
+    FICCAO_CIENTIFICA("Sci-Fi", "Ficção científica"),
+    DOCUMENTARIO("Documentary", "Documentário"),
+    REALITY("Reality-TV", "Reality"),
+    CRIME("Crime", "Crime"),
+    GAME_SHOW("Game-Show", "Game show"),
+    PARA_A_FAMILIA("Family", "Família");
 
     private String categoriaOmdb;
+    private String categoriaEmPortugues;
 
-    Categoria(String categoriaOmdb) {
+    Categoria(String categoriaOmdb, String categoriaEmPortugues) {
         this.categoriaOmdb = categoriaOmdb;
+        this.categoriaEmPortugues = categoriaEmPortugues;
+    }
+
+    public String getCategoriaEmPortugues() {
+        return categoriaEmPortugues;
     }
 
     public static List<Categoria> fromStringArray(String[] arrayCategorias) {
@@ -36,5 +42,27 @@ public enum Categoria {
             }
         }
         return listaCategorias;
+    }
+
+    public static Categoria fromPortugues(String textoEmPortugues) {
+
+        for (Categoria categoria : Categoria.values()) {
+            if (categoria.categoriaEmPortugues.equalsIgnoreCase(textoEmPortugues.trim())) {
+                return categoria;
+            }
+        }
+
+        throw new IllegalArgumentException("Nenhuma categoria encontrada para " + textoEmPortugues);
+
+    }
+
+    public static void exibirCategoriasEmPortugues() {
+        List<String> listaEmPortugues = new ArrayList<String>();
+
+        for (Categoria c : Categoria.values()) {
+            listaEmPortugues.add(c.getCategoriaEmPortugues());
+        }
+
+        System.out.println(listaEmPortugues);
     }
 }

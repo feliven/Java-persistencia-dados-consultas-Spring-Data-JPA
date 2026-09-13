@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.dao.DataIntegrityViolationException;
 
@@ -268,32 +266,28 @@ public class Principal {
     }
 
     private void buscarSeriePorGenero() {
-        List<String> generosList = Stream.of(Categoria.values())
-                .map(c -> c.toString().toLowerCase()).toList();
-        System.out.println(generosList);
+        Categoria.exibirCategoriasEmPortugues();
 
         System.out.println("Digite um dos gêneros acima:");
-        var nomeCategoria = scanner.nextLine();
-
-        Optional<Categoria> categoria = Stream.of(Categoria.values())
-                .filter(c -> c.toString().equalsIgnoreCase(nomeCategoria)).findFirst();
+        var nomeGenero = scanner.nextLine();
 
         try {
-            var seriesEncontradas = serieRepository.findByGeneros(categoria.get());
+            var categoriaBuscada = Categoria.fromPortugues(nomeGenero);
+
+            var seriesEncontradas = serieRepository.findByGeneros(categoriaBuscada);
 
             if (seriesEncontradas.size() > 0) {
                 System.out.println("Dados da(s) série(s): " + System.lineSeparator());
-                seriesEncontradas.forEach(s -> System.out
-                        .println(s.getTitulo() + ", gêneros=" + s.getGeneros() + ", sinopse=" + s.getSinopse()));
+                seriesEncontradas.forEach(s -> System.out.println(s.getTitulo() + ", gêneros="
+                        + s.getGeneros().stream().map(categoria -> categoria.getCategoriaEmPortugues()).toList()
+                        + ", sinopse=" + s.getSinopse()));
             } else {
                 System.out.println("Nenhuma série desse gênero foi encontrada");
             }
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | IllegalArgumentException e) {
             System.out.println("Gênero inválido!");
-            return;
         } catch (Exception e) {
             System.out.println("Erro inesperado: " + e);
-            return;
         }
     };
 }

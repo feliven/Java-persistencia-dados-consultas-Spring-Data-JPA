@@ -292,19 +292,18 @@ public class Principal {
     };
 
     private void buscarSeriesCurtasEBoas() {
-        System.out.println("Você quer ver séries boas com até quantas temporadas?");
-        int numeroTemporadas;
-        try {
-            numeroTemporadas = scanner.nextInt();
-        } catch (InputMismatchException e) {
-            System.out.println("Digite um número inteiro válido.");
-            scanner.nextLine();
-            return;
-        }
-        scanner.nextLine();
+        // System.out.println("Você quer ver séries boas com até quantas temporadas?");
+        // int numeroTemporadas;
+        // try {
+        // numeroTemporadas = scanner.nextInt();
+        // } catch (InputMismatchException e) {
+        // System.out.println("Digite um número inteiro válido.");
+        // scanner.nextLine();
+        // return;
+        // }
+        // scanner.nextLine();
 
-        var seriesEncontradas = serieRepository
-                .findByTotalTemporadasLessThanEqualAndAvaliacaoGreaterThanOrderByAvaliacaoDesc(numeroTemporadas, 8.0);
+        var seriesEncontradas = serieRepository.listarSeriesPorTemporadaEAvaliacao();
 
         if (seriesEncontradas.size() > 0) {
             System.out.println("Dados da(s) série(s): " + System.lineSeparator());

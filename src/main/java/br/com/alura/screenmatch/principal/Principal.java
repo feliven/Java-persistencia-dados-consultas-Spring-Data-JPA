@@ -48,6 +48,8 @@ public class Principal {
                     4 - Buscar série por título
                     5 - Buscar série por ator
                     6 - Buscar série por ator e avaliação
+                    7 - Buscar top 5 séries salvas
+                    8 - Listar todas as séries salvas por avaliação
 
                     0 - Sair""";
 
@@ -73,6 +75,12 @@ public class Principal {
                     break;
                 case 6:
                     buscarSeriePorAtorEAvaliacao();
+                    break;
+                case 7:
+                    buscarTop5Series();
+                    break;
+                case 8:
+                    listarSeriesPorNota();
                     break;
                 case 0:
                     System.out.println("Saindo...");
@@ -223,6 +231,31 @@ public class Principal {
                             + ", atores=" + s.getAtores() + ", sinopse=" + s.getSinopse()));
         } else {
             System.out.println("Nenhuma série foi encontrada com esse ator");
+        }
+    }
+
+    private void buscarTop5Series() {
+        var seriesEncontradas = serieRepository.findFirst5ByOrderByAvaliacaoDesc();
+
+        if (seriesEncontradas.size() > 0) {
+            System.out.println("Dados das séries: " + System.lineSeparator());
+            seriesEncontradas.forEach(s -> System.out
+                    .println(s.getTitulo() + ", avaliacao=" + s.getAvaliacao()
+                            + ", atores=" + s.getAtores() + ", sinopse=" + s.getSinopse()));
+        } else {
+            System.out.println("Nenhuma série foi encontrada");
+        }
+    }
+
+    private void listarSeriesPorNota() {
+        var seriesEncontradas = serieRepository.findAllByOrderByAvaliacaoDesc();
+
+        if (seriesEncontradas.size() > 0) {
+            System.out.println("Dados das séries: " + System.lineSeparator());
+            seriesEncontradas.forEach(s -> System.out
+                    .println(s.getTitulo() + ", avaliacao=" + s.getAvaliacao()));
+        } else {
+            System.out.println("Nenhuma série foi encontrada");
         }
     }
 }

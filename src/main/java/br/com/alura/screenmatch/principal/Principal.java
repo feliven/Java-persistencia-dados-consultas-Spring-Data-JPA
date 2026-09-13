@@ -51,8 +51,8 @@ public class Principal {
                     5 - Buscar série por ator
                     6 - Buscar série por ator e avaliação
                     7 - Buscar top 5 séries salvas
-                    8 - Listar todas as séries salvas por avaliação
-                    9 -  Buscar série por gênero / categoria
+                    8 - Buscar série por gênero / categoria
+                    9 - Buscar séries curtas e boas
 
                     0 - Sair""";
 
@@ -83,10 +83,10 @@ public class Principal {
                     buscarTop5Series();
                     break;
                 case 8:
-                    listarSeriesPorNota();
+                    buscarSeriePorGenero();
                     break;
                 case 9:
-                    buscarSeriePorGenero();
+                    buscarSeriesCurtasEBoas();
                     break;
                 case 0:
                     System.out.println("Saindo...");
@@ -253,17 +253,17 @@ public class Principal {
         }
     }
 
-    private void listarSeriesPorNota() {
-        var seriesEncontradas = serieRepository.findAllByOrderByAvaliacaoDesc();
+    // private void listarSeriesPorNota() {
+    // var seriesEncontradas = serieRepository.findAllByOrderByAvaliacaoDesc();
 
-        if (seriesEncontradas.size() > 0) {
-            System.out.println("Dados das séries: " + System.lineSeparator());
-            seriesEncontradas.forEach(s -> System.out
-                    .println(s.getTitulo() + ", avaliacao=" + s.getAvaliacao()));
-        } else {
-            System.out.println("Nenhuma série foi encontrada");
-        }
-    }
+    // if (seriesEncontradas.size() > 0) {
+    // System.out.println("Dados das séries: " + System.lineSeparator());
+    // seriesEncontradas.forEach(s -> System.out
+    // .println(s.getTitulo() + ", avaliacao=" + s.getAvaliacao()));
+    // } else {
+    // System.out.println("Nenhuma série foi encontrada");
+    // }
+    // }
 
     private void buscarSeriePorGenero() {
         Categoria.exibirCategoriasEmPortugues();
@@ -290,4 +290,29 @@ public class Principal {
             System.out.println("Erro inesperado: " + e);
         }
     };
+
+    private void buscarSeriesCurtasEBoas() {
+        System.out.println("Você quer ver séries boas com até quantas temporadas?");
+        int numeroTemporadas;
+        try {
+            numeroTemporadas = scanner.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Digite um número inteiro válido.");
+            scanner.nextLine();
+            return;
+        }
+        scanner.nextLine();
+
+        var seriesEncontradas = serieRepository
+                .findByTotalTemporadasLessThanEqualAndAvaliacaoGreaterThanOrderByAvaliacaoDesc(numeroTemporadas, 8.0);
+
+        if (seriesEncontradas.size() > 0) {
+            System.out.println("Dados da(s) série(s): " + System.lineSeparator());
+            seriesEncontradas.forEach(s -> System.out
+                    .println(s.getTitulo() + ", avaliacao=" + s.getAvaliacao()
+                            + ", temporadas=" + s.getTotalTemporadas() + ", sinopse=" + s.getSinopse()));
+        } else {
+            System.out.println("Nenhuma série foi encontrada com esses critérios");
+        }
+    }
 }

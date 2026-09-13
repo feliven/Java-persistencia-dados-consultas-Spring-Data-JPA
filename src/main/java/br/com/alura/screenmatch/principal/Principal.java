@@ -54,6 +54,7 @@ public class Principal {
                     8 - Buscar série por gênero / categoria
                     9 - Buscar séries curtas e boas
                     11 - buscarEpisodiosPorTrechoTitulo
+                    22 - buscarTop5EpisodiosSerie
 
                     0 - Sair""";
 
@@ -91,6 +92,9 @@ public class Principal {
                     break;
                 case 11:
                     buscarEpisodiosPorTrechoTitulo();
+                    break;
+                case 22:
+                    buscarTop5EpisodiosSerie();
                     break;
                 case 0:
                     System.out.println("Saindo...");
@@ -329,6 +333,24 @@ public class Principal {
             episodiosEncontrados.forEach(e -> System.out
                     .printf("Título: %s - Série: %s - S%sE%s\n",
                             e.getTitulo(), e.getSerie().getTitulo(),
+                            e.getTemporada(), e.getNumeroEpisodio()));
+        } else {
+            System.out.println("Nenhum episódio foi encontrado.");
+        }
+    }
+
+    private void buscarTop5EpisodiosSerie() {
+        listarSeriesBuscadas();
+
+        System.out.println("Digite o nome da série desejada:");
+        var nomeSerie = scanner.nextLine();
+
+        var episodiosEncontrados = serieRepository.listarTop5EpisodiosPorSerie(nomeSerie);
+
+        if (episodiosEncontrados.size() > 0) {
+            episodiosEncontrados.forEach(e -> System.out
+                    .printf("Título: %s - Nota %s - Série: %s - S%sE%s\n",
+                            e.getTitulo(), e.getAvaliacao(), e.getSerie().getTitulo(),
                             e.getTemporada(), e.getNumeroEpisodio()));
         } else {
             System.out.println("Nenhum episódio foi encontrado.");

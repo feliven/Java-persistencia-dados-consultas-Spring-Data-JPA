@@ -42,4 +42,13 @@ public interface SerieRepository extends JpaRepository<Serie, Long> {
 
     @Query("SELECT e FROM Episodio e WHERE LOWER(e.titulo) LIKE %:trechoTitulo%")
     List<Episodio> oldListarEpisodiosPorTrechoTitulo(String trechoTitulo);
+
+    @Query("""
+                SELECT e FROM Serie s JOIN s.episodios e
+                WHERE LOWER(s.titulo) LIKE CONCAT('%', LOWER(:trechoSerie), '%')
+                ORDER BY e.avaliacao DESC
+                LIMIT 5
+            """)
+    List<Episodio> listarTop5EpisodiosPorSerie(String trechoSerie);
+
 }

@@ -326,7 +326,10 @@ public class Principal {
 
         if (episodiosEncontrados.size() > 0) {
             System.out.println(System.lineSeparator() + "Episódio(s) encontrado(s):");
-            episodiosEncontrados.forEach(System.out::println);
+            episodiosEncontrados.forEach(e -> System.out
+                    .printf("Título: %s - Série: %s - S%sE%s\n",
+                            e.getTitulo(), e.getSerie().getTitulo(),
+                            e.getTemporada(), e.getNumeroEpisodio()));
         } else {
             System.out.println("Nenhum episódio foi encontrado.");
         }
